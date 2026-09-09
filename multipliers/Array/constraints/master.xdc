@@ -1,36 +1,81 @@
 ## =====================================================================
-## Constraints file for top_all_multipliers_demo
-## Target board : Digilent Basys3 (Xilinx Artix-7, xc7a35tcpg236-1)
-## Only the pins actually used by the demo are un-commented below.
-## Cross-check against Digilent's official Basys3 Master.xdc if you
-## are using a different board revision.
+## Basys3 Master XDC for 16x16 Array Multiplier
+## Board: Digilent Basys3
+## FPGA:  xc7a35tcpg236-1
+##
+## Top module:
+##     top_array_multiplier
+##
+## Operation:
+##     SW[15:0] -> enter A -> press BTNU
+##     SW[15:0] -> enter B -> press BTNU
+##     LD[15:0] displays product[15:0]
+##     BTNC resets the design
 ## =====================================================================
 
-## ---- Clock signal : 100 MHz onboard oscillator ----
+## Clock - 100 MHz
 set_property PACKAGE_PIN W5 [get_ports clk]
 set_property IOSTANDARD LVCMOS33 [get_ports clk]
-create_clock -period 10.000 -name sys_clk_pin -waveform {0.000 5.000} -add [get_ports clk]
+create_clock -period 10.000 -name sys_clk_pin -waveform {0.000 5.000} [get_ports clk]
 
-## ---- Reset button (BTNC - center button) ----
+## Reset - BTNC
 set_property PACKAGE_PIN U18 [get_ports btn_rst]
 set_property IOSTANDARD LVCMOS33 [get_ports btn_rst]
 
-## ---- Start button (BTNU - up button) ----
+## Start / Enter - BTNU
 set_property PACKAGE_PIN T18 [get_ports btn_start]
 set_property IOSTANDARD LVCMOS33 [get_ports btn_start]
 
-## ---- LEDs ----
-## LD0 : lit once both sequential multipliers (Booth + Sequential) finish
-set_property PACKAGE_PIN U16 [get_ports led_done]
-set_property IOSTANDARD LVCMOS33 [get_ports led_done]
+## =====================================================================
+## Switches SW0-SW15
+## =====================================================================
 
-## LD1 : lit when array / wallace / vedic results all agree (live self-check)
-set_property PACKAGE_PIN E19 [get_ports led_match]
-set_property IOSTANDARD LVCMOS33 [get_ports led_match]
+set_property PACKAGE_PIN V17 [get_ports {sw[0]}]
+set_property PACKAGE_PIN V16 [get_ports {sw[1]}]
+set_property PACKAGE_PIN W16 [get_ports {sw[2]}]
+set_property PACKAGE_PIN W17 [get_ports {sw[3]}]
+set_property PACKAGE_PIN W15 [get_ports {sw[4]}]
+set_property PACKAGE_PIN V15 [get_ports {sw[5]}]
+set_property PACKAGE_PIN W14 [get_ports {sw[6]}]
+set_property PACKAGE_PIN W13 [get_ports {sw[7]}]
+set_property PACKAGE_PIN V2  [get_ports {sw[8]}]
+set_property PACKAGE_PIN T3  [get_ports {sw[9]}]
+set_property PACKAGE_PIN T2  [get_ports {sw[10]}]
+set_property PACKAGE_PIN R3  [get_ports {sw[11]}]
+set_property PACKAGE_PIN W2  [get_ports {sw[12]}]
+set_property PACKAGE_PIN U1  [get_ports {sw[13]}]
+set_property PACKAGE_PIN T1  [get_ports {sw[14]}]
+set_property PACKAGE_PIN R2  [get_ports {sw[15]}]
+
+set_property IOSTANDARD LVCMOS33 [get_ports {sw[*]}]
 
 ## =====================================================================
-## Config options (recommended defaults for Basys3 programming)
+## LEDs LD0-LD15
 ## =====================================================================
+
+set_property PACKAGE_PIN U16 [get_ports {led[0]}]
+set_property PACKAGE_PIN E19 [get_ports {led[1]}]
+set_property PACKAGE_PIN U19 [get_ports {led[2]}]
+set_property PACKAGE_PIN V19 [get_ports {led[3]}]
+set_property PACKAGE_PIN W18 [get_ports {led[4]}]
+set_property PACKAGE_PIN U15 [get_ports {led[5]}]
+set_property PACKAGE_PIN U14 [get_ports {led[6]}]
+set_property PACKAGE_PIN V14 [get_ports {led[7]}]
+set_property PACKAGE_PIN V13 [get_ports {led[8]}]
+set_property PACKAGE_PIN V3  [get_ports {led[9]}]
+set_property PACKAGE_PIN W3  [get_ports {led[10]}]
+set_property PACKAGE_PIN U3  [get_ports {led[11]}]
+set_property PACKAGE_PIN P3  [get_ports {led[12]}]
+set_property PACKAGE_PIN N3  [get_ports {led[13]}]
+set_property PACKAGE_PIN P1  [get_ports {led[14]}]
+set_property PACKAGE_PIN L1  [get_ports {led[15]}]
+
+set_property IOSTANDARD LVCMOS33 [get_ports {led[*]}]
+
+## =====================================================================
+## Configuration
+## =====================================================================
+
 set_property CONFIG_VOLTAGE 3.3 [current_design]
 set_property CFGBVS VCCO [current_design]
 set_property BITSTREAM.CONFIG.SPI_BUSWIDTH 4 [current_design]
