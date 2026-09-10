@@ -1,57 +1,56 @@
-//=====================================================================
-// Vedic Multiplier (Urdhva Tiryagbhyam sutra) - 16x16 unsigned
-// Built hierarchically: 16x16 <- four 8x8 blocks <- four 4x4 blocks.
-//   For operands split into halves {Hi, Lo}:
-//     P = (Hi_a*Hi_b)<<W + (Hi_a*Lo_b + Lo_a*Hi_b)<<(W/2) + Lo_a*Lo_b
-//=====================================================================
+## Basys3 constraints for top_vedic_multiplier
+## FPGA: XC7A35T-1CPG236C
 
-// ---- Base case : 4x4 ----
-module vedic_mult_4x4 (
-    input  wire [3:0] a,
-    input  wire [3:0] b,
-    output wire [7:0] p
-);
-    assign p = a * b;   // small enough for direct synthesis mapping
-endmodule
+## Clock 100 MHz
+set_property PACKAGE_PIN W5 [get_ports clk]
+set_property IOSTANDARD LVCMOS33 [get_ports clk]
+create_clock -period 10.000 -name sys_clk_pin [get_ports clk]
 
-// ---- 8x8 built from four 4x4 blocks ----
-module vedic_mult_8x8 (
-    input  wire [7:0]  a,
-    input  wire [7:0]  b,
-    output wire [15:0] p
-);
-    wire [3:0] ah = a[7:4], al = a[3:0];
-    wire [3:0] bh = b[7:4], bl = b[3:0];
+## BTNC = Reset
+set_property PACKAGE_PIN U18 [get_ports btn_rst]
+set_property IOSTANDARD LVCMOS33 [get_ports btn_rst]
 
-    wire [7:0] p_hh, p_hl, p_lh, p_ll;
+## BTNU = Enter
+set_property PACKAGE_PIN T18 [get_ports btn_start]
+set_property IOSTANDARD LVCMOS33 [get_ports btn_start]
 
-    vedic_mult_4x4 m_hh (.a(ah), .b(bh), .p(p_hh));
-    vedic_mult_4x4 m_hl (.a(ah), .b(bl), .p(p_hl));
-    vedic_mult_4x4 m_lh (.a(al), .b(bh), .p(p_lh));
-    vedic_mult_4x4 m_ll (.a(al), .b(bl), .p(p_ll));
+## Switches
+set_property PACKAGE_PIN V17 [get_ports {sw[0]}]
+set_property PACKAGE_PIN V16 [get_ports {sw[1]}]
+set_property PACKAGE_PIN W16 [get_ports {sw[2]}]
+set_property PACKAGE_PIN W17 [get_ports {sw[3]}]
+set_property PACKAGE_PIN W15 [get_ports {sw[4]}]
+set_property PACKAGE_PIN V15 [get_ports {sw[5]}]
+set_property PACKAGE_PIN W14 [get_ports {sw[6]}]
+set_property PACKAGE_PIN W13 [get_ports {sw[7]}]
+set_property PACKAGE_PIN V2 [get_ports {sw[8]}]
+set_property PACKAGE_PIN T3 [get_ports {sw[9]}]
+set_property PACKAGE_PIN T2 [get_ports {sw[10]}]
+set_property PACKAGE_PIN R3 [get_ports {sw[11]}]
+set_property PACKAGE_PIN W2 [get_ports {sw[12]}]
+set_property PACKAGE_PIN U1 [get_ports {sw[13]}]
+set_property PACKAGE_PIN T1 [get_ports {sw[14]}]
+set_property PACKAGE_PIN R2 [get_ports {sw[15]}]
+set_property IOSTANDARD LVCMOS33 [get_ports {sw[*]}]
 
-    wire [8:0] mid = {1'b0, p_hl} + {1'b0, p_lh};   // cross terms
+## LEDs
+set_property PACKAGE_PIN U16 [get_ports {led[0]}]
+set_property PACKAGE_PIN E19 [get_ports {led[1]}]
+set_property PACKAGE_PIN U19 [get_ports {led[2]}]
+set_property PACKAGE_PIN V19 [get_ports {led[3]}]
+set_property PACKAGE_PIN W18 [get_ports {led[4]}]
+set_property PACKAGE_PIN U15 [get_ports {led[5]}]
+set_property PACKAGE_PIN U14 [get_ports {led[6]}]
+set_property PACKAGE_PIN V14 [get_ports {led[7]}]
+set_property PACKAGE_PIN V13 [get_ports {led[8]}]
+set_property PACKAGE_PIN V3 [get_ports {led[9]}]
+set_property PACKAGE_PIN W3 [get_ports {led[10]}]
+set_property PACKAGE_PIN U3 [get_ports {led[11]}]
+set_property PACKAGE_PIN P3 [get_ports {led[12]}]
+set_property PACKAGE_PIN N3 [get_ports {led[13]}]
+set_property PACKAGE_PIN P1 [get_ports {led[14]}]
+set_property PACKAGE_PIN L1 [get_ports {led[15]}]
+set_property IOSTANDARD LVCMOS33 [get_ports {led[*]}]
 
-    assign p = ({8'b0, p_hh} << 8) + ({7'b0, mid} << 4) + {8'b0, p_ll};
-endmodule
-
-// ---- 16x16 built from four 8x8 blocks ----
-module vedic_multiplier (
-    input  wire [15:0] a,
-    input  wire [15:0] b,
-    output wire [31:0] product
-);
-    wire [7:0] ah = a[15:8], al = a[7:0];
-    wire [7:0] bh = b[15:8], bl = b[7:0];
-
-    wire [15:0] p_hh, p_hl, p_lh, p_ll;
-
-    vedic_mult_8x8 m_hh (.a(ah), .b(bh), .p(p_hh));
-    vedic_mult_8x8 m_hl (.a(ah), .b(bl), .p(p_hl));
-    vedic_mult_8x8 m_lh (.a(al), .b(bh), .p(p_lh));
-    vedic_mult_8x8 m_ll (.a(al), .b(bl), .p(p_ll));
-
-    wire [16:0] mid = {1'b0, p_hl} + {1'b0, p_lh};
-
-    assign product = ({16'b0, p_hh} << 16) + ({15'b0, mid} << 8) + {16'b0, p_ll};
-endmodule
+set_property CONFIG_VOLTAGE 3.3 [current_design]
+set_property CFGBVS VCCO [current_design]
