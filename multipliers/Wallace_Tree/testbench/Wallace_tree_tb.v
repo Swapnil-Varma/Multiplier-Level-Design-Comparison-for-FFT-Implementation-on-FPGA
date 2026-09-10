@@ -3,7 +3,8 @@ module tb_wallace_multiplier;
 
     reg  [15:0] a, b;
     wire [31:0] product;
-    integer errors = 0;
+    integer errors;
+
     integer i;
 
     wallace_multiplier DUT (.a(a), .b(b), .product(product));
@@ -25,6 +26,10 @@ module tb_wallace_multiplier;
     endtask
 
     initial begin
+        errors = 0;
+        a = 16'b0;
+        b = 16'b0;
+
         run_check(16'd0,    16'd0);
         run_check(16'd1,    16'd1);
         run_check(16'hFFFF, 16'hFFFF);
