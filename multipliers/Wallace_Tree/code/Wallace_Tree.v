@@ -86,3 +86,56 @@ module wallace_multiplier (
     assign product = s6_0 + c6_0;
 
 endmodule
+
+//=====================================================================
+// Basys3 Hardware Top for 16x16 Wallace Tree Multiplier
+//
+// First BTNU press : store A from SW[15:0]
+// Second BTNU press: store B from SW[15:0]
+// LEDs             : product[15:0]
+// BTNC              : reset
+//=====================================================================
+module top_wallace_multiplier (
+    input  wire        clk,
+    input  wire        btn_rst,
+    input  wire        btn_start,
+    input  wire [15:0] sw,
+    output wire [15:0] led
+);
+
+    reg [15:0] a_reg;
+    reg [15:0] b_reg;
+    reg        b_phase;
+    reg        valid;
+
+    wire [31:0] product;
+
+    always @(posedge clk) begin
+        if (btn_rst) begin
+            a_reg   <= 16'b0;
+            b_reg   <= 16'b0;
+            b_phase <= 1'b0;
+            valid   <= 1'b0;
+        end
+        else if (btn_start) begin
+            if (!b_phase) begin
+                a_reg   <= sw;
+                b_phase <= 1'b1;
+                valid   <= 1'b0;
+            end
+            else begin
+                b_reg <= sw;
+                valid <= 1'b1;
+            end
+        end
+    end
+
+    wallace_multiplier U_WALLACE (
+        .a(a_reg),
+        .b(b_reg),
+        .product(product)
+    );
+
+    assign led = valid ? product[15:0] : 16'b0;
+
+endmodule
