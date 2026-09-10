@@ -16,7 +16,8 @@ module tb_booth_multiplier;
     wire signed [31:0] product;
     wire done;
 
-    integer errors = 0;
+    integer errors;
+
     integer i;
 
     reg signed [15:0] rand_a;
@@ -131,6 +132,7 @@ module tb_booth_multiplier;
     // ================================================================
 
     initial begin
+        errors = 0;
 
         // ------------------------------------------------------------
         // Initial conditions
